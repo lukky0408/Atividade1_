@@ -25,7 +25,8 @@ public class listagemVIEW extends javax.swing.JFrame {
     public listagemVIEW() {
         initComponents();
         
-        listarProdutos();
+               preencherTabela("SELECT * FROM produtos");
+
     }
 
     /**
@@ -148,12 +149,12 @@ public class listagemVIEW extends javax.swing.JFrame {
         ProdutosDAO produtosdao = new ProdutosDAO();
         
         //produtosdao.venderProduto(Integer.parseInt(id));
-        
-        listarProdutos();
+        preencherTabela("SELECT * FROM produtos");
     }//GEN-LAST:event_btnVenderActionPerformed
 
     private void btnVendasActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVendasActionPerformed
-
+        //vendasVIEW vendas = new vendasVIEW(); 
+        //vendas.setVisible(true);
     }//GEN-LAST:event_btnVendasActionPerformed
 
     private void btnVoltarActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnVoltarActionPerformed
@@ -208,27 +209,42 @@ public class listagemVIEW extends javax.swing.JFrame {
     private javax.swing.JTable listaProdutos;
     // End of variables declaration//GEN-END:variables
 
- 
- 
- private void listarProdutos(){
-        try {
-            ProdutosDAO produtosdao = new ProdutosDAO();
-            
-            DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
-            model.setNumRows(0);
-            
-            ArrayList<ProdutosDTO> listagem = produtosdao.listarProdutos();
-            
-            for(int i = 0; i < listagem.size(); i++){
-                model.addRow(new Object[]{
-                    listagem.get(i).getId(),
-                    listagem.get(i).getNome(),
-                    listagem.get(i).getValor(),
-                    listagem.get(i).getStatus()
-                });
-            }
-        } catch (Exception e) {
-        }
-    
-    }
+ private void preencherTabela(String sql) {
+           
+       try {    
+           Connection con=(Connection)DriverManager.getConnection("jdbc:mysql://localhost:3306/uc11?useSSL=false","root","richard2018");
+              PreparedStatement banco = (PreparedStatement)con.prepareStatement(sql);
+
+              
+              banco.execute();
+              
+              ResultSet resultado = banco.executeQuery();
+              
+              DefaultTableModel model = (DefaultTableModel) listaProdutos.getModel();
+              
+              model.setNumRows(0);
+              
+              while(resultado.next()) 
+              {
+             
+                  
+                  model.addRow(new Object[] {
+                      
+                      resultado.getInt("id"),
+                      resultado.getString("nome"),
+                      resultado.getInt("valor"),
+                      resultado.getString("status")
+                          
+                  });
+}
+              
+              banco.close();
+  con.close();
+              
+           
+       } catch (SQLException ex) {
+           System.out.println("Um erro aconteceu: " + ex);
+       }
+  
+ }
 }
