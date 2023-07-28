@@ -13,6 +13,12 @@ public class ProdutosDTO {
     private int valor;
     private String status;
 
+    ProdutosDTO(int id, String nome, double preco, String status) {
+    }
+
+    ProdutosDTO() {
+    }
+
     
     public int getId() {
         return id;

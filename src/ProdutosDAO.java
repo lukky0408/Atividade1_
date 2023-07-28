@@ -21,6 +21,7 @@ public class ProdutosDAO {
     PreparedStatement prep;
     ResultSet rs;
     ArrayList<ProdutosDTO> listagem = new ArrayList<>();
+    
 
     public void cadastrarProduto(ProdutosDTO produto) {
 
@@ -88,14 +89,14 @@ public class ProdutosDAO {
 
             
             prep.setInt(1, idProduto);
-            prep.executeUpdate();
+            
             
             
             return true;
         } catch (SQLException ex) {
             return false;
         }
-    }
+    };
 
    
         // Configurações do banco de dados
@@ -103,29 +104,38 @@ public class ProdutosDAO {
         
 
         public List<ProdutosDTO> listarProdutosVendidos() {
-            List<ProdutosDTO> produtosVendidos = new ArrayList<>();
+        List<ProdutosDTO> produtosVendidos = new ArrayList<>();
 
-            try {
-                String sql = "SELECT * FROM produtos WHERE status = 'Vendido'";
-                    ResultSet rs = prep.executeQuery();
-                        while (rs.next()) {
-                            int id = rs.getInt("id");
-                            String nome = rs.getString("nome");
-                            double preco = rs.getDouble("preco");
-                            // Outros campos, se houver
+        conn = new conectaDAO().connectDB();
 
-                            ProdutosDTO produto = new ProdutosDTO();
-                            produtosVendidos.add(produto);
-                        }
+        
+        try {
+            String sql = "SELECT * FROM produtos WHERE status = 'Vendido'";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        int id = rs.getInt("id");
+                        String nome = rs.getString("nome");
+                        double preco = rs.getInt("valor");
+                        String status = rs.getString("status");
+                        ProdutosDTO produto = new ProdutosDTO(id, nome, preco, status);
+                        produtosVendidos.add(produto);
+                        
+                        
+                    }
                     
-                
-            } catch (SQLException e) {
-                e.getMessage();
+                    
+                }
             }
-
-            return produtosVendidos;
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
+
+        return produtosVendidos;
     }
+        
+        
+}
     
 
 
